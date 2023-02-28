@@ -2,7 +2,7 @@
 
 
 ## IMPORTANT
-**This code will not run on windows!**
+**pycocotools library used in this code does not provide support for windows!**
 ## Tutorials
 - [Introduction to code](notebooks/code_introduction.ipynb).
 - [Dataset setup](tutorials/dataset_setup.md) (Not required for Cybele computers and IDUN).
