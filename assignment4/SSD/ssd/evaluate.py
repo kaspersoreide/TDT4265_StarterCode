@@ -93,18 +93,18 @@ def evaluate(
     class_ap_stats = calculate_class_aps(cocoGt, cocoDt, label_map)
 
     stats_all_objects = {
-        "mAP": E.stats[0], # same as mAP@
+#         "mAP": E.stats[0], # same as mAP@
         "mAP@0.5": E.stats[1], # Same as PASCAL VOC mAP
-        "mAP@0.75": E.stats[2],
-        "mAP_small": E.stats[3],
-        "mAP_medium": E.stats[4],
-        "mAP_large": E.stats[5],
-        "average_recall@1": E.stats[6],
-        "average_recall@10": E.stats[7],
-        "average_recall@100": E.stats[8],
-        "average_recall@100_small": E.stats[9],
-        "average_recall@100_medium": E.stats[10],
-        "average_recall@100_large": E.stats[11],
+#         "mAP@0.75": E.stats[2],
+#         "mAP_small": E.stats[3],
+#         "mAP_medium": E.stats[4],
+#         "mAP_large": E.stats[5],
+#         "average_recall@1": E.stats[6],
+#         "average_recall@10": E.stats[7],
+#         "average_recall@100": E.stats[8],
+#         "average_recall@100_small": E.stats[9],
+#         "average_recall@100_medium": E.stats[10],
+#         "average_recall@100_large": E.stats[11],
     }
 
     return dict(stats_all_objects, **class_ap_stats)
