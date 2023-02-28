@@ -13,7 +13,7 @@ def compute_loss_and_accuracy(
     """
     Computes the average loss and the accuracy over the whole dataset
     in dataloader.
-    Args:
+    Args: 
         dataloder: Validation/Test dataloader
         model: torch.nn.Module
         loss_criterion: The loss criterion, e.g: torch.nn.CrossEntropyLoss()
@@ -24,6 +24,7 @@ def compute_loss_and_accuracy(
     accuracy = 0
     num_batches = 0
     correct_guesses = 0
+    images = 0
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -36,9 +37,10 @@ def compute_loss_and_accuracy(
             # Compute Loss and Accuracy
             average_loss += loss_criterion(output_probs, Y_batch).item()
             num_batches += 1
-            correct_guesses += (output_probs.argmax(axis=1) == Y_batch).sum().item()
+            correct_guesses += (output_probs.argmax(axis=1).squeeze() == Y_batch.squeeze()).sum().item()
+            images += output_probs.argmax(axis=1).shape[0]
             # Predicted class is the max index over the column dimension
-    accuracy = correct_guesses / num_batches
+    accuracy = correct_guesses / images
     average_loss /= num_batches
     return average_loss, accuracy
 
