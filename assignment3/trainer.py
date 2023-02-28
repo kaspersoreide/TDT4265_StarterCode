@@ -36,8 +36,10 @@ def compute_loss_and_accuracy(
             # Compute Loss and Accuracy
             average_loss += loss_criterion(output_probs, Y_batch).item()
             num_batches += 1
-            correct_guesses += (output_probs.argmax(axis=1).squeeze() == Y_batch.squeeze()).item()
+            correct_guesses += (output_probs.argmax(axis=1) == Y_batch).sum().item()
             # Predicted class is the max index over the column dimension
+    accuracy = correct_guesses / num_batches
+    average_loss /= num_batches
     return average_loss, accuracy
 
 
