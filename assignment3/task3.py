@@ -22,8 +22,8 @@ class MyModel(nn.Module):
         self.num_classes = num_classes
         # Define the convolutional layers
         self.transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.AutoAugment(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            #transforms.AutoAugment(),
         ])
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
