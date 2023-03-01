@@ -2,11 +2,12 @@ import pathlib
 import matplotlib.pyplot as plt
 import utils
 from torch import nn
+from torchvision import transforms
 from dataloaders import load_cifar10
 from trainer import Trainer
 
 
-class ExampleModel(nn.Module):
+class MyModel(nn.Module):
 
     def __init__(self,
                  image_channels,
@@ -18,13 +19,15 @@ class ExampleModel(nn.Module):
                 num_classes: Number of classes we want to predict (10)
         """
         super().__init__()
-        # TODO: Implement this function (Task  2a)
         self.num_classes = num_classes
         # Define the convolutional layers
+        self.transform = nn.Sequential(
+            transforms.AutoAugment()
+        )
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=32,
+                out_channels=128,
                 kernel_size=5,
                 stride=1,
                 padding=2
@@ -35,7 +38,7 @@ class ExampleModel(nn.Module):
                 stride=2
             ),
             nn.Conv2d(
-                in_channels=32,
+                in_channels=128,
                 out_channels=64,
                 kernel_size=5,
                 stride=1,
@@ -48,7 +51,7 @@ class ExampleModel(nn.Module):
             ),
             nn.Conv2d(
                 in_channels=64,
-                out_channels=128,
+                out_channels=32,
                 kernel_size=5,
                 stride=1,
                 padding=2
@@ -60,7 +63,7 @@ class ExampleModel(nn.Module):
             )
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 2048
+        self.num_output_features = 512
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
@@ -81,7 +84,8 @@ class ExampleModel(nn.Module):
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
         # TODO: Implement this function (Task  2a)
-        out = self.feature_extractor(x)
+        out = self.transform(x)
+        out = self.feature_extractor(out)
         out = self.classifier(out)
         batch_size = x.shape[0]
         expected_shape = (batch_size, self.num_classes)
@@ -117,7 +121,7 @@ def main():
     learning_rate = 5e-2
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
-    model = ExampleModel(image_channels=3, num_classes=10)
+    model = MyModel(image_channels=3, num_classes=10)
     trainer = Trainer(
         batch_size,
         learning_rate,
@@ -127,7 +131,7 @@ def main():
         dataloaders
     )
     trainer.train()
-    create_plots(trainer, "task2")
+    create_plots(trainer, "task3")
 
 if __name__ == "__main__":
     main()
