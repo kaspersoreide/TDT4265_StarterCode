@@ -21,9 +21,7 @@ class MyModel(nn.Module):
         super().__init__()
         self.num_classes = num_classes
         # Define the convolutional layers
-        self.transform = nn.Sequential(
-            transforms.AutoAugment()
-        )
+        self.transform = transforms.AutoAugment()
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
