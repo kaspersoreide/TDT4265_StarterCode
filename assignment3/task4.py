@@ -9,19 +9,24 @@ from dataloaders import load_cifar10
 class MyResnet(nn.Module):
     def __init__(self):
         super().__init__()
-        self.transform = torchvision.transforms.Resize([224, 224])
+        self.transform = torchvision.transforms.Compose([
+            torchvision.transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            ),
+            torchvision.transforms.Resize([224, 224]),
+        ])
         self.model = torchvision.models.resnet18(pretrained=True)
-        self.model.fc = nn.Linear(512, 10) # No need to apply softmax,
+        self.fc = nn.Linear(512, 10) # No need to apply softmax,
         # as this is done in nn.CrossEntropyLoss
         for param in self.model.parameters(): # Freeze all parameters
             param.requires_grad = False
-        for param in self.model.fc.parameters(): # Unfreeze the last fully-connected
-            param.requires_grad = True # layer
         for param in self.model.layer4.parameters(): # Unfreeze the last 5 convolutional
             param.requires_grad = True # layers
     def forward(self, x):
         x = self.transform(x)        
         x = self.model(x)
+        x = self.fc(x)
         return x
 
 def create_plots(trainer: Trainer, name: str):
@@ -51,7 +56,7 @@ def main():
     learning_rate = 5e-4
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
-    model = MyResnet(image_channels=3, num_classes=10)
+    model = MyResnet()
     trainer = Trainer(
         batch_size,
         learning_rate,
