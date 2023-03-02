@@ -72,6 +72,7 @@ class MyModel(nn.Module):
         # included with nn.CrossEntropyLoss
 
         self.classifier = nn.Sequential(
+            nn.Flatten(),
             nn.Linear(self.num_output_features, 128),
             nn.ReLU(),
             nn.Linear(128, 64),
