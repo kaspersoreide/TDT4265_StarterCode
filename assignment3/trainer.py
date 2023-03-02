@@ -53,7 +53,8 @@ class Trainer:
                  early_stop_count: int,
                  epochs: int,
                  model: torch.nn.Module,
-                 dataloaders: typing.List[torch.utils.data.DataLoader]):
+                 dataloaders: typing.List[torch.utils.data.DataLoader],
+                 optimizer: torch.optim.Optimizer = None):
         """
             Initialize our trainer class.
         """
@@ -70,9 +71,12 @@ class Trainer:
         self.model = utils.to_cuda(self.model)
         print(self.model)
 
-        # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
+        if not optimizer:
+            # Define our optimizer. SGD = Stochastich Gradient Descent
+            self.optimizer = torch.optim.SGD(self.model.parameters(),
                                          self.learning_rate)
+        else:
+            self.optimizer = optimizer
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders

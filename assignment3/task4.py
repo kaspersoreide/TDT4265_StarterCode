@@ -1,7 +1,7 @@
 import pathlib
 from matplotlib import pyplot as plt
 import torchvision
-from torch import nn
+from torch import nn, optim
 from trainer import Trainer
 import utils
 from dataloaders import load_cifar10
@@ -58,16 +58,18 @@ def main():
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
     model = MyResnet()
+    optimizer = optim.Adam(params=model.parameters(), lr=learning_rate)
     trainer = Trainer(
         batch_size,
         learning_rate,
         early_stop_count,
         epochs,
         model,
-        dataloaders
+        dataloaders,
+        optimizer
     )
     trainer.train()
-    create_plots(trainer, "task3")
+    create_plots(trainer, "task4")
 
 if __name__ == "__main__":
     main()
