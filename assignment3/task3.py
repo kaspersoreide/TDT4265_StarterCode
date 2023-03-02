@@ -19,77 +19,67 @@ class MyModel(nn.Module):
                 num_classes: Number of classes we want to predict (10)
         """
         super().__init__()
+        num_filters = 32  # Set number of filters in first conv layer
         self.num_classes = num_classes
         # Define the convolutional layers
-        self.transform = transforms.Compose([
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            #transforms.AutoAugment(),
-        ])
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=32,
+                out_channels=num_filters,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ),
+            nn.BatchNorm2d(num_features=num_filters),
+            nn.ReLU(), 
             nn.Conv2d(
-                in_channels=32,
-                out_channels=64,
+                in_channels=num_filters,
+                out_channels=num_filters * 2,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ),
+            nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.ReLU(), 
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
             nn.Conv2d(
-                in_channels=64,
-                out_channels=128,
+                in_channels=num_filters * 2,
+                out_channels=num_filters * 4,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ),
+            nn.BatchNorm2d(num_features=num_filters * 4),
+            nn.ReLU(), 
             nn.Conv2d(
-                in_channels=128,
-                out_channels=256,
+                in_channels=num_filters * 4,
+                out_channels=num_filters * 8,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            )
+            nn.BatchNorm2d(num_features=num_filters * 8),
+            nn.ReLU(), 
+            nn.MaxPool2d(kernel_size=2, stride=2)   
         )
-        # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 256 * 2 * 2
+        # The output of feature_extractor will be [batch_size, num_filters * 32, 4, 4]
+        self.num_output_features = num_filters * 32 * 4 * 4
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
         # There is no need for softmax activation function, as this is
         # included with nn.CrossEntropyLoss
-
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(self.num_output_features, 128),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Linear(128, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
             nn.Linear(64, num_classes)
+            # Softmax already in crossEntropyLoss!
         )
 
     def forward(self, x):
@@ -99,7 +89,6 @@ class MyModel(nn.Module):
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
         # TODO: Implement this function (Task  2a)
-        out = self.transform(x)
         out = self.feature_extractor(out)
         out = self.classifier(out)
         batch_size = x.shape[0]
