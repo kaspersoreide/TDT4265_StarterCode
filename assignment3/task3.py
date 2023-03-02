@@ -28,7 +28,7 @@ class MyModel(nn.Module):
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=128,
+                out_channels=16,
                 kernel_size=5,
                 stride=1,
                 padding=2
@@ -39,20 +39,20 @@ class MyModel(nn.Module):
                 stride=2
             ),
             nn.Conv2d(
-                in_channels=128,
-                out_channels=64,
-                kernel_size=5,
-                stride=1,
-                padding=2
-            ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ),
-            nn.Conv2d(
-                in_channels=64,
+                in_channels=16,
                 out_channels=32,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d(
+                kernel_size=2,
+                stride=2
+            ),
+            nn.Conv2d(
+                in_channels=32,
+                out_channels=64,
                 kernel_size=5,
                 stride=1,
                 padding=2
@@ -64,7 +64,7 @@ class MyModel(nn.Module):
             )
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 512
+        self.num_output_features = 1024
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
@@ -72,8 +72,9 @@ class MyModel(nn.Module):
         # included with nn.CrossEntropyLoss
 
         self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(self.num_output_features, 64),
+            nn.Linear(self.num_output_features, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
             nn.ReLU(),
             nn.Linear(64, num_classes)
         )
