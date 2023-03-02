@@ -28,18 +28,6 @@ class MyModel(nn.Module):
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=16,
-                kernel_size=5,
-                stride=1,
-                padding=2
-            ),
-            nn.ReLU(),
-            nn.MaxPool2d(
-                kernel_size=2,
-                stride=2
-            ),
-            nn.Conv2d(
-                in_channels=16,
                 out_channels=32,
                 kernel_size=5,
                 stride=1,
@@ -61,10 +49,22 @@ class MyModel(nn.Module):
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
+            ),
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=128,
+                kernel_size=5,
+                stride=1,
+                padding=2
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d(
+                kernel_size=2,
+                stride=2
             )
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 3 * 16 * 16
+        self.num_output_features = 128 * 4 * 4
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
