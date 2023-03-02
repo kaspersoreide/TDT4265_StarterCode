@@ -30,7 +30,7 @@ class MyModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.BatchNorm2d(num_features=num_filters),
+            nn.BatchNorm2d(num_features=num_filters),
             nn.ReLU(), 
             nn.Conv2d(
                 in_channels=num_filters,
@@ -39,7 +39,7 @@ class MyModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.BatchNorm2d(num_features=num_filters * 2),
             nn.ReLU(), 
             nn.MaxPool2d(kernel_size=2, stride=2),
 
@@ -50,7 +50,7 @@ class MyModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.BatchNorm2d(num_features=num_filters * 4),
+            nn.BatchNorm2d(num_features=num_filters * 4),
             nn.ReLU(), 
             nn.Conv2d(
                 in_channels=num_filters * 4,
@@ -59,7 +59,7 @@ class MyModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.BatchNorm2d(num_features=num_filters * 8),
+            nn.BatchNorm2d(num_features=num_filters * 8),
             nn.ReLU(), 
             nn.MaxPool2d(kernel_size=2, stride=2)   
         )
@@ -121,7 +121,7 @@ def main():
     utils.set_seed(0)
     epochs = 10
     batch_size = 64
-    learning_rate = 5e-2
+    learning_rate = 5e-3
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
     model = MyModel(image_channels=3, num_classes=10)
