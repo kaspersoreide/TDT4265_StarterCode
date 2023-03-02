@@ -34,4 +34,4 @@ Below is a plot of training, validation and test accuracy
 When training stopped, these were the final results:<br>
 Validation Loss: 0.33, Validation Accuracy: 0.902<br>
 Figure showing validation and test loss during training:<br>
-
+![task4](./plots/task4_plot.png)

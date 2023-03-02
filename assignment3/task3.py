@@ -1,7 +1,7 @@
 import pathlib
 import matplotlib.pyplot as plt
 import utils
-from torch import nn
+from torch import nn, optim
 from torchvision import transforms
 from dataloaders import load_cifar10
 from trainer import Trainer
@@ -19,52 +19,52 @@ class MyModel(nn.Module):
                 num_classes: Number of classes we want to predict (10)
         """
         super().__init__()
-        num_filters = 32  # Set number of filters in first conv layer
+        first_layer_filters = 32  # Set number of filters in first conv layer
         self.num_classes = num_classes
         # Define the convolutional layers
         self.feature_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
-                out_channels=num_filters,
+                out_channels=first_layer_filters,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.BatchNorm2d(num_features=num_filters),
+            nn.BatchNorm2d(num_features=first_layer_filters),
             nn.ReLU(), 
             nn.Conv2d(
-                in_channels=num_filters,
-                out_channels=num_filters * 2,
+                in_channels=first_layer_filters,
+                out_channels=first_layer_filters * 2,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.BatchNorm2d(num_features=num_filters * 2),
+            nn.BatchNorm2d(num_features=first_layer_filters * 2),
             nn.ReLU(), 
             nn.MaxPool2d(kernel_size=2, stride=2),
 
             nn.Conv2d(
-                in_channels=num_filters * 2,
-                out_channels=num_filters * 4,
+                in_channels=first_layer_filters * 2,
+                out_channels=first_layer_filters * 4,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.BatchNorm2d(num_features=num_filters * 4),
+            nn.BatchNorm2d(num_features=first_layer_filters * 4),
             nn.ReLU(), 
             nn.Conv2d(
-                in_channels=num_filters * 4,
-                out_channels=num_filters * 8,
+                in_channels=first_layer_filters * 4,
+                out_channels=first_layer_filters * 8,
                 kernel_size=5,
                 stride=1,
                 padding=2
             ),
-            nn.BatchNorm2d(num_features=num_filters * 8),
+            nn.BatchNorm2d(num_features=first_layer_filters * 8),
             nn.ReLU(), 
             nn.MaxPool2d(kernel_size=2, stride=2)   
         )
-        # The output of feature_extractor will be [batch_size, num_filters * 32, 4, 4]
-        self.num_output_features = num_filters * 32 * 4 * 4
+        # The output of feature_extractor will be [batch_size, first_layer_filters'' * 32, 4, 4]
+        self.num_output_features = first_layer_filters * 32 * 4 * 4
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
@@ -121,17 +121,19 @@ def main():
     utils.set_seed(0)
     epochs = 10
     batch_size = 64
-    learning_rate = 5e-3
+    learning_rate = 5e-4
     early_stop_count = 4
     dataloaders = load_cifar10(batch_size)
     model = MyModel(image_channels=3, num_classes=10)
+    optimizer = optim.Adam(params=model.parameters(), lr=learning_rate)
     trainer = Trainer(
         batch_size,
         learning_rate,
         early_stop_count,
         epochs,
         model,
-        dataloaders
+        dataloaders,
+        optimizer
     )
     trainer.train()
     create_plots(trainer, "task3")
