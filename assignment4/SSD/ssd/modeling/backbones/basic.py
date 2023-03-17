@@ -18,7 +18,8 @@ class BasicModel(nn.Module):
             image_channels: int,
             output_feature_sizes: List[Tuple[int]]):
         super().__init__()
-        self.features1 = nn.Sequential(
+        self.extractors = []
+        self.extractors.append(nn.Sequential(
             nn.Conv2d(
                 in_channels=image_channels,
                 out_channels=32,
@@ -53,8 +54,8 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
-        self.features2 = nn.Sequential(
+        ))
+        self.extractors.append(nn.Sequential(
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=output_channels[0],
@@ -72,8 +73,8 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
-        self.features3 = nn.Sequential(
+        ))
+        self.extractors.append(nn.Sequential(
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=output_channels[1],
@@ -91,8 +92,8 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
-        self.features4 = nn.Sequential(
+        ))
+        self.extractors.append(nn.Sequential(
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=output_channels[2],
@@ -110,8 +111,8 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
-        self.features4 = nn.Sequential(
+        ))
+        self.extractors.append(nn.Sequential(
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=output_channels[3],
@@ -129,8 +130,8 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
-        self.features5 = nn.Sequential(
+        ))
+        self.extractors.append(nn.Sequential(
             nn.ReLU(),
             nn.Conv2d(
                 in_channels=output_channels[4],
@@ -148,7 +149,7 @@ class BasicModel(nn.Module):
                 padding=1
             ),
             nn.ReLU(),
-        )
+        ))
 
         self.out_channels = output_channels
         self.output_feature_shape = output_feature_sizes
@@ -167,6 +168,9 @@ class BasicModel(nn.Module):
             shape(-1, output_channels[0], 38, 38),
         """
         out_features = []
+        out_features = self.extractors[0](x)
+        for i in range(1, 6):
+            out_features[i] = self.extractors[i](out_features[i-1])
         for idx, feature in enumerate(out_features):
             out_channel = self.out_channels[idx]
             h, w = self.output_feature_shape[idx]
